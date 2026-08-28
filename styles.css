@@ -433,6 +433,8 @@ body {
 }
 
 .lightbox-image-wrap {
+  position: relative;
+  width: 100%;
   max-width: 100%;
   max-height: 100%;
   overflow: auto;
@@ -440,6 +442,7 @@ body {
 }
 
 .lightbox img {
+  width: 100%;
   max-width: 100%;
   max-height: calc(100vh - 154px);
   border-radius: 8px;
@@ -447,6 +450,30 @@ body {
   transform-origin: center center;
   transition: transform 0.18s ease;
   display: block;
+}
+
+.lightbox-topbar {
+  position: absolute;
+  top: 22px;
+  left: 20px;
+  right: 70px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--gold-light);
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.lightbox-topbar span:last-child {
+  color: var(--cream-dim);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 
 .lightbox-close {
@@ -468,59 +495,45 @@ body {
   cursor: pointer;
 }
 
-.lightbox-nav,
-.lightbox-tools button {
-  all: unset;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  background: rgba(20,18,16,0.88);
-  color: var(--gold-light);
-  cursor: pointer;
-}
-
-.lightbox-nav {
+.lightbox-bottom {
   position: absolute;
-  top: 50%;
+  right: 14px;
+  bottom: 18px;
+  left: 14px;
   z-index: 2;
-  width: 42px;
-  height: 52px;
-  border-radius: 10px;
-  font-size: 38px;
-  line-height: 1;
-  transform: translateY(-50%);
-}
-
-.lightbox-prev { left: 12px; }
-.lightbox-next { right: 12px; }
-
-.lightbox-tools {
-  position: absolute;
-  bottom: 22px;
-  left: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: rgba(10,9,8,0.9);
-  transform: translateX(-50%);
+  gap: 10px;
 }
 
-.lightbox-tools button {
-  width: 36px;
-  height: 32px;
-  border-radius: 8px;
-  font-size: 24px;
-}
-
-.lightbox-tools span {
-  min-width: 47px;
+.lightbox-hint {
   color: var(--cream-dim);
   font-size: 11px;
-  font-weight: 700;
   text-align: center;
+}
+
+.lightbox-pages {
+  display: flex;
+  gap: 7px;
+}
+
+.lightbox-pages button {
+  all: unset;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(20,18,16,0.88);
+  color: var(--cream-dim);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.lightbox-pages button.active {
+  border-color: var(--gold-light);
+  background: var(--gold-light);
+  color: var(--black);
 }
 
 /* ============ FOOTER ============ */

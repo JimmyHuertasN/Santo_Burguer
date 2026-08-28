@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Santo Burger | Menú</title>
 <meta name="description" content="Menú digital de Santo Burger. Burger, Grill and Fries.">
 <link rel="icon" href="assets/logo.png">
@@ -29,27 +29,16 @@
 <main class="menu">
 
   <!-- COMIDA -->
-  <section class="card" data-card="comida">
-    <button class="card-head" data-toggle="comida" aria-expanded="false" aria-controls="panel-comida">
+  <section class="card" data-card="comida" data-direct-menu>
+    <button class="card-head" data-toggle="comida" aria-haspopup="dialog">
       <span class="card-index" aria-hidden="true">01</span>
       <span class="card-title">
         <span class="card-title-main">La carta</span>
         <span class="card-title-sub">Comida &amp; burgers</span>
-        <span class="card-detail">2 páginas · toca para explorar</span>
+        <span class="card-detail">2 páginas · toca para ver el menú</span>
       </span>
-      <span class="chevron" aria-hidden="true"></span>
+      <span class="chevron chevron-external" aria-hidden="true"></span>
     </button>
-    <div class="card-panel" id="panel-comida" role="region">
-      <div class="gallery" data-gallery="comida">
-        <div class="gallery-info"><span>Carta completa</span><span data-page></span></div>
-        <div class="gallery-stage">
-          <button class="gallery-arrow gallery-arrow-prev" data-prev aria-label="Ver página anterior">‹</button>
-          <div class="gallery-track" data-track></div>
-          <button class="gallery-arrow gallery-arrow-next" data-next aria-label="Ver página siguiente">›</button>
-        </div>
-        <div class="gallery-dots" data-dots></div>
-      </div>
-    </div>
   </section>
 
   <!-- MICHELADAS -->
@@ -93,14 +82,17 @@
 
 <!-- Lightbox -->
 <div class="lightbox" data-lightbox aria-hidden="true">
-  <button class="lightbox-nav lightbox-prev" data-lightbox-prev aria-label="Imagen anterior">‹</button>
+  <div class="lightbox-topbar">
+    <span>Menú Santo Burger</span>
+    <span data-lightbox-page></span>
+  </div>
   <button class="lightbox-close" data-lightbox-close aria-label="Cerrar">&times;</button>
-  <div class="lightbox-image-wrap"><img data-lightbox-img src="" alt=""></div>
-  <button class="lightbox-nav lightbox-next" data-lightbox-next aria-label="Imagen siguiente">›</button>
-  <div class="lightbox-tools" aria-label="Controles de zoom">
-    <button data-zoom-out aria-label="Alejar">−</button>
-    <span data-zoom-label>100%</span>
-    <button data-zoom-in aria-label="Acercar">+</button>
+  <div class="lightbox-image-wrap" data-image-wrap>
+    <img data-lightbox-img src="" alt="">
+  </div>
+  <div class="lightbox-bottom">
+    <span class="lightbox-hint">Pellizca para ampliar</span>
+    <div class="lightbox-pages" data-lightbox-pages aria-label="Páginas del menú"></div>
   </div>
 </div>
 

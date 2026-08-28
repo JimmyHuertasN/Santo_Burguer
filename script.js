@@ -24,15 +24,15 @@ const MENUS = {
 let activeMenu = null;
 let activeImage = 0;
 let zoomLevel = 1;
+let pinchStartDistance = 0;
+let pinchStartZoom = 1;
 
 function buildGallery(key) {
   const config = MENUS[key];
   const gallery = document.querySelector(`[data-gallery="${key}"]`);
+  if (!gallery) return;
   const track = gallery.querySelector("[data-track]");
   const dots = gallery.querySelector("[data-dots]");
-  const page = gallery.querySelector("[data-page]");
-  const prev = gallery.querySelector("[data-prev]");
-  const next = gallery.querySelector("[data-next]");
 
   if (!config || config.count === 0) {
     gallery.dataset.empty = "true";
@@ -44,56 +44,16 @@ function buildGallery(key) {
     return;
   }
 
-  let imgs = "";
-  let dotEls = "";
-  for (let i = 1; i <= config.count; i++) {
-    const src = `${config.folder}/${i}.jpg`;
-    imgs += `<img src="${src}" alt="Menú Santo Burger - página ${i}" loading="lazy" data-index="${i - 1}">`;
-    dotEls += `<span data-dot="${i - 1}"></span>`;
-  }
-  track.innerHTML = imgs;
-  dots.innerHTML = dotEls;
-
-  const setPage = (index) => {
-    page.textContent = `Página ${index + 1} de ${config.count}`;
-    dots.querySelectorAll("span").forEach((dot, i) => {
-      dot.classList.toggle("active", i === index);
-    });
-    prev.disabled = index === 0;
-    next.disabled = index === config.count - 1;
-  };
-
-  const goTo = (index) => {
-    const target = Math.max(0, Math.min(index, config.count - 1));
-    track.scrollTo({ left: target * track.clientWidth, behavior: "smooth" });
-    setPage(target);
-  };
-
-  if (config.count > 1) {
-    setPage(0);
-
-    track.addEventListener("scroll", () => {
-      const index = Math.round(track.scrollLeft / track.clientWidth);
-      setPage(index);
-    });
-    prev.addEventListener("click", () => goTo(Math.round(track.scrollLeft / track.clientWidth) - 1));
-    next.addEventListener("click", () => goTo(Math.round(track.scrollLeft / track.clientWidth) + 1));
-  } else {
-    dots.innerHTML = "";
-    page.textContent = "Página 1 de 1";
-    prev.hidden = true;
-    next.hidden = true;
-  }
-
-  track.querySelectorAll("img").forEach((img) => {
-    img.addEventListener("click", () => openLightbox(key, Number(img.dataset.index)));
-  });
 }
 
 /* ============ ACCORDION ============ */
 
 function initAccordion() {
-  const cards = document.querySelectorAll(".card[data-card]");
+  const cards = document.querySelectorAll(".card[data-card]:not([data-direct-menu])");
+
+  document.querySelector("[data-direct-menu] [data-toggle]").addEventListener("click", () => {
+    openLightbox("comida", 0);
+  });
 
   cards.forEach((card) => {
     const key = card.dataset.card;
@@ -143,7 +103,6 @@ function closeLightbox() {
 function setZoom(level) {
   zoomLevel = Math.max(1, Math.min(level, 2.5));
   document.querySelector("[data-lightbox-img]").style.transform = `scale(${zoomLevel})`;
-  document.querySelector("[data-zoom-label]").textContent = `${Math.round(zoomLevel * 100)}%`;
 }
 
 function changeLightboxImage(step) {
@@ -159,8 +118,15 @@ function changeLightboxImage(step) {
 
 function updateLightboxNavigation() {
   const count = MENUS[activeMenu].count;
-  document.querySelector("[data-lightbox-prev]").hidden = activeImage === 0;
-  document.querySelector("[data-lightbox-next]").hidden = activeImage === count - 1;
+  document.querySelector("[data-lightbox-page]").textContent = `Página ${activeImage + 1} de ${count}`;
+  document.querySelector("[data-lightbox-pages]").innerHTML = Array.from({ length: count }, (_, i) => `
+    <button type="button" class="${i === activeImage ? "active" : ""}" data-lightbox-page-button="${i}">Página ${i + 1}</button>`).join("");
+  document.querySelectorAll("[data-lightbox-page-button]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeImage = Number(button.dataset.lightboxPageButton);
+      changeLightboxImage(0);
+    });
+  });
 }
 
 function initLightbox() {
@@ -168,13 +134,26 @@ function initLightbox() {
   document.querySelector("[data-lightbox]").addEventListener("click", (e) => {
     if (e.target.matches("[data-lightbox]")) closeLightbox();
   });
-  document.querySelector("[data-lightbox-prev]").addEventListener("click", () => changeLightboxImage(-1));
-  document.querySelector("[data-lightbox-next]").addEventListener("click", () => changeLightboxImage(1));
-  document.querySelector("[data-zoom-in]").addEventListener("click", () => setZoom(zoomLevel + 0.25));
-  document.querySelector("[data-zoom-out]").addEventListener("click", () => setZoom(zoomLevel - 0.25));
   document.querySelector("[data-lightbox-img]").addEventListener("dblclick", () => {
     setZoom(zoomLevel > 1 ? 1 : 2);
   });
+  const wrap = document.querySelector("[data-image-wrap]");
+
+  wrap.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 2) return;
+    const [first, second] = event.touches;
+    pinchStartDistance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+    pinchStartZoom = zoomLevel;
+  }, { passive: true });
+  wrap.addEventListener("touchmove", (event) => {
+    if (event.touches.length !== 2 || !pinchStartDistance) return;
+    event.preventDefault();
+    const [first, second] = event.touches;
+    const distance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+    setZoom(pinchStartZoom * (distance / pinchStartDistance));
+  }, { passive: false });
+  wrap.addEventListener("touchend", () => { pinchStartDistance = 0; }, { passive: true });
+
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeLightbox();
     if (document.querySelector("[data-lightbox]").dataset.visible === "true") {
